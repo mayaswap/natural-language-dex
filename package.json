@@ -49,10 +49,9 @@
   },
   "homepage": "https://github.com/your-username/natural-language-dex#readme",
   "dependencies": {
-    "@elizaos/core": "^1.0.7",
-    "@elizaos/client": "^1.0.7",
+    "@elizaos/core": "^0.1.7-alpha.1",
     "ethers": "^6.8.1",
-    "viem": "^1.19.15",
+    "viem": "^2.24.1",
     "@privy-io/server-auth": "^1.8.3",
     "zod": "^3.22.4",
     "dotenv": "^16.3.1",
