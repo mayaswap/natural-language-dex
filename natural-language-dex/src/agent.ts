@@ -4,6 +4,7 @@ import priceAction from "./actions/price.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from 'url';
+import readline from 'readline';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -68,7 +69,6 @@ async function createAgent(): Promise<SimpleAgent> {
 
 // Interactive CLI for testing
 async function startInteractiveCLI(agent: SimpleAgent) {
-    const readline = require('readline');
     
     const rl = readline.createInterface({
         input: process.stdin,
