@@ -1,0 +1,78 @@
+{
+  "name": "natural-language-dex",
+  "version": "1.0.0",
+  "description": "Natural Language DEX Interface with ElizaOS - Conversational AI agent for DeFi trading across PulseChain, Base Chain, and Sonic Chain",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts",
+    "start": "node dist/index.js",
+    "agent": "cd natural-language-dex && npm run agent",
+    "test": "cd natural-language-dex/tests && npm test",
+    "test:all": "cd natural-language-dex/tests && npm run test:all",
+    "test:api": "cd natural-language-dex/tests && npm run test:api",
+    "test:wallet": "cd natural-language-dex/tests && npm run test:wallet",
+    "test:parser": "cd natural-language-dex/tests && npm run test:parser",
+    "test:integration": "cd natural-language-dex/tests && npm run test:integration",
+    "setup": "npm install && cd natural-language-dex && npm install && cd tests && npm install",
+    "setup:env": "cp .env.example .env && echo '✅ Environment file created! Please edit .env with your API keys.'",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist/ natural-language-dex/dist/ natural-language-dex/tests/test-report-*.md",
+    "help": "echo 'Natural Language DEX Interface - Available Commands:' && echo '' && echo '🚀 Getting Started:' && echo '  npm run setup     - Install all dependencies' && echo '  npm run setup:env - Create environment file' && echo '  npm run agent     - Start the AI agent' && echo '' && echo '🧪 Testing:' && echo '  npm test          - Run complete test suite' && echo '  npm run test:all  - Run all test categories' && echo '  npm run test:api  - Test API integration' && echo '  npm run test:wallet - Test wallet functionality' && echo '  npm run test:parser - Test natural language parsing' && echo '' && echo '🔧 Development:' && echo '  npm run dev       - Start development server' && echo '  npm run build     - Build for production' && echo '  npm run lint      - Check code quality'"
+  },
+  "keywords": [
+    "elizaos",
+    "ai-agent",
+    "dex",
+    "defi",
+    "natural-language",
+    "pulsechain",
+    "base-chain",
+    "sonic-chain",
+    "trading",
+    "swap",
+    "liquidity-management",
+    "v3-liquidity",
+    "conversational-ai"
+  ],
+  "author": "DEX Interface Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/natural-language-dex.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/natural-language-dex/issues"
+  },
+  "homepage": "https://github.com/your-username/natural-language-dex#readme",
+  "dependencies": {
+    "@elizaos/core": "^1.0.7",
+    "@elizaos/client": "^1.0.7",
+    "ethers": "^6.8.1",
+    "viem": "^1.19.15",
+    "@privy-io/server-auth": "^1.8.3",
+    "zod": "^3.22.4",
+    "dotenv": "^16.3.1",
+    "node-fetch": "^3.3.2",
+    "ws": "^8.14.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.7",
+    "@types/ws": "^8.5.10",
+    "typescript": "^5.3.3",
+    "tsx": "^4.6.2",
+    "tsup": "^8.0.1",
+    "vitest": "^1.0.4",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 

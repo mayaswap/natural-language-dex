@@ -1,0 +1,43 @@
+{
+  "name": "dex-interface-tests",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Comprehensive tests for Natural Language DEX Interface",
+  "scripts": {
+    "test": "tsx test-suite.ts",
+    "test:api": "tsx api-tests.ts",
+    "test:wallet": "tsx wallet-tests.ts",
+    "test:parser": "tsx parser-tests.ts",
+    "test:integration": "tsx real-world-test.ts",
+    "test:agent": "echo '⚠️  Agent testing requires manual interaction. Please run: cd ../natural-language-dex && npm run agent'",
+    "test:all": "npm run test:api && npm run test:wallet && npm run test:parser && npm run test:integration",
+    "test:watch": "echo '⚠️  Watch mode not implemented yet. Run: npm test'",
+    "test:report": "tsx test-suite.ts > test-report-$(date +%Y%m%d-%H%M%S).md",
+    "test:continuous": "echo '⚠️  Continuous testing not implemented yet. Use: watch -n 3600 npm test'",
+    "test:verbose": "DEBUG=true tsx test-suite.ts",
+    "help": "echo 'Available test commands:' && echo '  npm test         - Run complete test suite' && echo '  npm run test:api - Test API integration only' && echo '  npm run test:wallet - Test wallet functionality' && echo '  npm run test:parser - Test natural language parsing' && echo '  npm run test:integration - Run real-world integration tests' && echo '  npm run test:all - Run all test suites sequentially' && echo '  npm run test:verbose - Run tests with debug output'"
+  },
+  "keywords": [
+    "dex",
+    "testing",
+    "natural-language",
+    "elizaos",
+    "pulsechain",
+    "ethereum",
+    "defi"
+  ],
+  "author": "DEX Interface Team",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^24.0.0",
+    "ethers": "^6.14.3",
+    "dotenv": "^16.5.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "chalk": "^5.3.0",
+    "axios": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 

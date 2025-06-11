@@ -1,0 +1,76 @@
+{
+  "name": "Pulsechain DEX Configuration",
+  "chain": {
+    "chainId": 369,
+    "name": "PulseChain",
+    "nativeCurrency": {
+      "name": "Pulse",
+      "symbol": "PLS",
+      "decimals": 18
+    },
+    "rpc": {
+      "primary": "https://rpc.pulsechain.com",
+      "backup": null,
+      "websocket": null
+    },
+    "explorer": "https://scan.pulsechain.com",
+    "wpls": "0xA1077a294dDE1B09bB078844df40758a5D0f9a27"
+  },
+  "dex": {
+    "name": "9mm",
+    "protocols": ["V2", "V3"],
+    "v2": {
+      "factory": "0x3a0Fa7884dD93f3cd234bBE2A0958Ef04b05E13b",
+      "router": "0xcC73b59F8D7b7c532703bDfea2808a28a488cF47"
+    },
+    "v3": {
+      "MasterChefV3": "0x842f3eD1C390637C99F82833D01D37695BF22066",
+      "SmartRouter": "0xa9444246d80d6E3496C9242395213B4f22226a59",
+      "SmartRouterHelper": "0xb7ef0a4d0EC7DEE58a7762EfB707ed0a646E92A9",
+      "MixedRouteQuoterV1": "0xBa53762F281A293B6bE73C9D2d3b740C433635cA",
+      "QuoterV2": "0x500260dD7C27eCE20b89ea0808d05a13CF867279",
+      "TokenValidator": "0x623942Bb33b72f02061324A74C4718bC4b9366a1",
+      "V3Factory": "0xe50DbDC88E87a2C92984d794bcF3D1d76f619C68",
+      "V3PoolDeployer": "0x00f37661fA1b2B8A530cfb7B6d5A5a6AEd74177b",
+      "SwapRouter": "0x7bE8fbe502191bBBCb38b02f2d4fA0D628301bEA",
+      "V3Migrator": "0xdee0BDC4cc82872f7D35941aBFA872F744FdF064",
+      "TickLens": "0x9f6d34fCC7cB8f98dfC0A5CB414f6539B414d26a",
+      "NonfungibleTokenPositionDescriptor": "0xfc6D8b33211c1ACe98d34b3b4b0DF35F4E3186d1",
+      "NonfungiblePositionManager": "0xCC05bf158202b4F461Ede8843d76dcd7Bbad07f2",
+      "InterfaceMulticall": "0xC8edb20cA86A0c6B3dbd38A1D47579C625a23dF4",
+      "V3LmPoolDeployer": "0xa887a9F1A0Ebc94bBB1C868bD32189d078d5eeCf"
+    }
+  },
+  "subgraphs": {
+    "v2": "https://graph.9mm.pro/subgraphs/name/pulsechain/9mm",
+    "v3": "https://graph.9mm.pro/subgraphs/name/pulsechain/9mm-v3-latest"
+  },
+  "status": {
+    "configured": true,
+    "hasV2": true,
+    "hasV3": true,
+    "hasSubgraphs": true,
+    "hasTokenList": true,
+    "hasAggregatorAPI": true,
+    "missingData": [
+      "testnet_config"
+    ]
+  },
+  "aggregator": {
+    "name": "9mm",
+    "baseURL": "https://api.9mm.pro",
+    "endpoints": {
+      "quote": "/swap/v1/quote",
+      "price": "/swap/v1/price", 
+      "sources": "/swap/v1/sources"
+    },
+    "features": [
+      "gas_estimates",
+      "price_feeds", 
+      "smart_routing",
+      "multi_source_aggregation",
+      "slippage_protection",
+      "fee_monetization"
+    ]
+  }
+} 
