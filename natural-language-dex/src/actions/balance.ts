@@ -47,19 +47,11 @@ const balanceAction: Action = {
             
             // Try to get wallet from stored state
             try {
-                console.log(`🔍 Looking for stored wallet for user: ${message.userId}`);
-                console.log(`🔍 Available wallets:`, (runtime as any).userWallets);
-                
                 if ((runtime as any).userWallets && message.userId) {
                     const userWallet = (runtime as any).userWallets[message.userId];
                     if (userWallet?.address) {
                         walletAddress = userWallet.address;
-                        console.log(`✅ Found stored wallet: ${walletAddress}`);
-                    } else {
-                        console.log(`❌ No wallet found for user ${message.userId}`);
                     }
-                } else {
-                    console.log(`❌ No userWallets storage or userId missing`);
                 }
             } catch (error) {
                 console.log('Could not retrieve stored wallet:', error);
@@ -95,7 +87,7 @@ I need a wallet address to check balances.
             }
             
             // Initialize provider for PulseChain (main network for this demo)
-            const provider = new ethers.JsonRpcProvider(CHAIN_CONFIGS[369].rpcUrl);
+            const provider = new ethers.JsonRpcProvider(CHAIN_CONFIGS.pulsechain.rpcUrl);
             
             try {
                 // Get native token balance (PLS)

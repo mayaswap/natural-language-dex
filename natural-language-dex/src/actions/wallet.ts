@@ -25,7 +25,7 @@ const walletAction: Action = {
             if (!message.content?.text) return false;
             
             const parsed = parseCommand(message.content.text);
-            return ['wallet', 'balance'].includes(parsed.intent);
+            return parsed.intent === 'wallet';  // Only handle wallet intent, not balance
         } catch (error) {
             console.error('Wallet validation error:', error);
             return false;
@@ -63,7 +63,6 @@ const walletAction: Action = {
                                 privateKey: wallet.privateKey,
                                 createdAt: Date.now()
                             };
-                            console.log(`✅ Stored wallet for user ${message.userId}: ${wallet.address}`);
                         }
                     } catch (error) {
                         console.log('Could not store wallet in state, continuing...', error);
@@ -119,20 +118,6 @@ I can help you with:
 
 **What would you like to do?**`;
                 }
-                
-            } else if (parsed.intent === 'balance') {
-                // Handle balance queries
-                responseText = `💰 **Balance Check**
-
-To check your wallet balance, I need a wallet address.
-
-**Options:**
-• "Check balance of 0x742d35Cc6635C0532925a3b8D357376C..." 
-• "Create a wallet first" (if you don't have one yet)
-• "What's the balance of WPLS at [address]"
-
-**Note:** Balance checking requires a valid Ethereum/PulseChain address.
-Create a wallet first if you don't have one!`;
             }
 
             if (callback) {
