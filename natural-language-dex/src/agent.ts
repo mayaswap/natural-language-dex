@@ -1,6 +1,8 @@
 import { parseCommand } from "./utils/parser.js";
 import swapAction from "./actions/swap.js";
 import priceAction from "./actions/price.js";
+import walletAction from "./actions/wallet.js";
+import balanceAction from "./actions/balance.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -35,21 +37,41 @@ async function createAgent(): Promise<SimpleAgent> {
             console.log("⚠️  Character file not found, using default");
         }
 
+        // Create shared runtime that persists across all actions
+        const sharedRuntime = {
+            userWallets: {} as Record<string, any>,
+            // Add other shared state as needed
+        } as any;
+
                  // Create simple agent with our actions
          const agent: SimpleAgent = {
              actions: [
                  {
                      name: swapAction.name,
-                     validate: async (message) => await swapAction.validate({} as any, message),
+                     validate: async (message) => await swapAction.validate(sharedRuntime, message),
                      handler: async (message, callback) => {
-                         await swapAction.handler({} as any, message, undefined, {}, callback);
+                         await swapAction.handler(sharedRuntime, message, undefined, {}, callback);
                      }
                  },
                  {
                      name: priceAction.name,
-                     validate: async (message) => await priceAction.validate({} as any, message),
+                     validate: async (message) => await priceAction.validate(sharedRuntime, message),
                      handler: async (message, callback) => {
-                         await priceAction.handler({} as any, message, undefined, {}, callback);
+                         await priceAction.handler(sharedRuntime, message, undefined, {}, callback);
+                     }
+                 },
+                 {
+                     name: walletAction.name,
+                     validate: async (message) => await walletAction.validate(sharedRuntime, message),
+                     handler: async (message, callback) => {
+                         await walletAction.handler(sharedRuntime, message, undefined, {}, callback);
+                     }
+                 },
+                 {
+                     name: balanceAction.name,
+                     validate: async (message) => await balanceAction.validate(sharedRuntime, message),
+                     handler: async (message, callback) => {
+                         await balanceAction.handler(sharedRuntime, message, undefined, {}, callback);
                      }
                  }
              ],

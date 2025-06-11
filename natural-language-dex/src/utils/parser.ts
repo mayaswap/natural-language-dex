@@ -8,7 +8,7 @@ import { POPULAR_TOKENS } from '../config/chains.js';
  */
 
 export interface ParsedCommand {
-  intent: 'swap' | 'price' | 'balance' | 'portfolio' | 'help' | 'addLiquidity' | 'removeLiquidity' | 'poolQuery' | 'unknown';
+  intent: 'swap' | 'price' | 'balance' | 'portfolio' | 'help' | 'addLiquidity' | 'removeLiquidity' | 'poolQuery' | 'wallet' | 'unknown';
   fromToken?: string;
   toToken?: string;
   amount?: string;
@@ -117,12 +117,19 @@ const INTENT_PATTERNS = {
   
   balance: [
     // Primary balance keywords
-    /\b(balance|wallet|holdings?|amount)\b/i,
+    /\b(balance|holdings?|amount)\b/i,
     /\bhow\s+much\s+(do\s+i\s+have|have\s+i\s+got|\w+\s+do\s+i\s+have)/i,
     /\bshow\s+(my|me)\s+\w+/i,
     /\bmy\s+\w+\s+(balance|holdings?|amount)/i,
     /\bcheck\s+my\s+\w+/i,
     /\bwhat'?s\s+my\s+\w+/i,
+    
+    // Direct balance queries without token
+    /\bwhat\s+is\s+my\s+balance\b/i,
+    /\bwhat'?s\s+my\s+balance\b/i,
+    /\bshow\s+my\s+balance\b/i,
+    /\bcheck\s+my\s+balance\b/i,
+    /\bmy\s+balance\b/i,
   ],
   
   portfolio: [
@@ -188,6 +195,24 @@ const INTENT_PATTERNS = {
     // Position queries
     /\b(my|show\s+my)\s+(liquidity\s+)?positions?\b/i,
     /\blist\s+my\s+(lp|liquidity|positions?)\b/i,
+  ],
+  
+  wallet: [
+    // Wallet creation/generation (more flexible patterns)
+    /\b(create|generate|new|make).*?(wallet|address)\b/i,
+    /\bwallet.*?(create|creation|generate|generation|new|make)\b/i,
+    /\bmake\s+me\s+a\s+wallet\b/i,
+    /\bneed\s+a.*?wallet\b/i,
+    /\bget\s+me\s+a.*?wallet\b/i,
+    
+    // Wallet connection  
+    /\b(connect|import|add).*?(wallet|my\s+wallet)\b/i,
+    /\bwallet.*?(connection|import|connect)\b/i,
+    
+    // General wallet queries
+    /\bwallet\s+(help|info|options)\b/i,
+    /\bmy\s+wallet\b/i,
+    /\babout\s+wallets?\b/i,
   ]
 };
 
@@ -838,6 +863,13 @@ export function parseCommand(input: string): ParsedCommand {
       break;
     case 'poolQuery':
       result = parsePoolQuery(input);
+      break;
+    case 'wallet':
+      result = {
+        intent: 'wallet',
+        confidence: score > 1 ? 0.9 : 0.7,
+        rawInput: input
+      };
       break;
     default:
       result = {
