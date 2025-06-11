@@ -8,6 +8,7 @@ import type {
     Content
 } from '@elizaos/core';
 import { parseCommand } from '../utils/parser.js';
+import { WalletStorage } from '../utils/wallet-storage.js';
 
 const walletAction: Action = {
     name: "WALLET_MANAGEMENT",
@@ -24,7 +25,7 @@ const walletAction: Action = {
         try {
             if (!message.content?.text) return false;
             
-            const parsed = parseCommand(message.content.text);
+            const parsed = await parseCommand(message.content.text);
             return parsed.intent === 'wallet';  // Only handle wallet intent, not balance
         } catch (error) {
             console.error('Wallet validation error:', error);
@@ -41,7 +42,7 @@ const walletAction: Action = {
     ) => {
         try {
             const userMessage = message.content?.text || "";
-            const parsed = parseCommand(userMessage);
+            const parsed = await parseCommand(userMessage);
             
             let responseText = "";
             
@@ -49,13 +50,27 @@ const walletAction: Action = {
                 // Check for specific wallet commands
                 const lowerText = userMessage.toLowerCase();
                 
+                // First check if user already has a wallet
+                const storage = WalletStorage.getInstance();
+                const existingWallet = storage.getWallet(message.userId);
+                
                 if (lowerText.includes('create') || lowerText.includes('generate') || lowerText.includes('new')) {
                     // Generate new wallet
                     const wallet = ethers.Wallet.createRandom();
                     
-                    // Store wallet in user memory for future use
+                    // Store wallet in persistent storage
                     try {
-                        // Simple state storage approach
+                        const storage = WalletStorage.getInstance();
+                        
+                        // Save to persistent storage
+                        if (message.userId) {
+                            storage.saveWallet(message.userId, {
+                                address: wallet.address,
+                                privateKey: wallet.privateKey
+                            });
+                        }
+                        
+                        // Also store in runtime for session performance
                         if (runtime && message.userId) {
                             (runtime as any).userWallets = (runtime as any).userWallets || {};
                             (runtime as any).userWallets[message.userId] = {
@@ -64,8 +79,11 @@ const walletAction: Action = {
                                 createdAt: Date.now()
                             };
                         }
+                        
+                        const storageInfo = storage.getStorageInfo();
+                        console.log(`📁 Wallet storage location: ${storageInfo.location}`);
                     } catch (error) {
-                        console.log('Could not store wallet in state, continuing...', error);
+                        console.log('Could not store wallet, continuing...', error);
                     }
                     
                     responseText = `🎉 **New Wallet Created Successfully!**
@@ -85,7 +103,14 @@ const walletAction: Action = {
 3. Start trading with commands like "swap 100 USDC for WPLS"
 
 *This wallet works across PulseChain, Base Chain, and other EVM networks.*
-*✅ I've saved your wallet address for future balance queries!*`;
+*✅ I've saved your wallet for future use - it will persist even after restarting!*
+
+📁 **Wallet Storage Location:**
+Your wallet is saved at: \`${WalletStorage.getInstance().getStorageLocation()}\`
+• Main file: \`wallet-store.json\`
+• Backup file: \`wallet-${message.userId}-${wallet.address}.json\`
+
+**Recovery:** If you need to recover your wallet, check the above directory.`;
 
                 } else if (lowerText.includes('connect')) {
                     responseText = `🔗 **Wallet Connection Guide**
@@ -107,7 +132,25 @@ To connect your existing wallet, you have a few options:
 💡 **What would you like to do?**`;
 
                 } else {
-                    responseText = `💼 **Wallet Management Options**
+                    // Check if they're asking about their wallet
+                    if (existingWallet && (lowerText.includes('my wallet') || lowerText.includes('what is my') || lowerText.includes('show my'))) {
+                        responseText = `💼 **Your Stored Wallet**
+
+**Wallet Address:** \`${existingWallet.address}\`
+**Created:** ${new Date(existingWallet.createdAt).toLocaleString()}
+
+📁 **Storage Location:** \`${storage.getStorageLocation()}\`
+
+✅ Your wallet is safely stored and will persist across sessions!
+
+**Options:**
+• "What's my balance" - Check your token balances
+• "Create a new wallet" - Replace with a new wallet
+• "Show my private key" - View your private key (be careful!)
+
+⚠️ **Note:** Your private key is stored locally at the above location.`;
+                    } else {
+                        responseText = `💼 **Wallet Management Options**
 
 I can help you with:
 
@@ -117,6 +160,7 @@ I can help you with:
 📝 **Import Wallet:** "Import wallet with private key [key]"
 
 **What would you like to do?**`;
+                    }
                 }
             }
 

@@ -3,6 +3,7 @@ import swapAction from "./actions/swap.js";
 import priceAction from "./actions/price.js";
 import walletAction from "./actions/wallet.js";
 import balanceAction from "./actions/balance.js";
+import { WalletStorage } from "./utils/wallet-storage.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -37,9 +38,15 @@ async function createAgent(): Promise<SimpleAgent> {
             console.log("⚠️  Character file not found, using default");
         }
 
+        // Initialize wallet storage
+        const walletStorage = WalletStorage.getInstance();
+        const storageInfo = walletStorage.getStorageInfo();
+        console.log(`💾 Wallet storage: ${storageInfo.walletCount} wallets at ${storageInfo.location}`);
+        
         // Create shared runtime that persists across all actions
+        // Pre-populate with wallets from persistent storage
         const sharedRuntime = {
-            userWallets: {} as Record<string, any>,
+            userWallets: walletStorage.getAllWallets() || {},
             // Add other shared state as needed
         } as any;
 

@@ -9,6 +9,7 @@ import type {
 } from '@elizaos/core';
 import { parseCommand } from '../utils/parser.js';
 import { POPULAR_TOKENS, CHAIN_CONFIGS } from '../config/chains.js';
+import { WalletStorage } from '../utils/wallet-storage.js';
 
 const balanceAction: Action = {
     name: "CHECK_BALANCE",
@@ -23,7 +24,7 @@ const balanceAction: Action = {
         try {
             if (!message.content?.text) return false;
             
-            const parsed = parseCommand(message.content.text);
+            const parsed = await parseCommand(message.content.text);
             return parsed.intent === 'balance';
         } catch (error) {
             console.error('Balance validation error:', error);
@@ -40,21 +41,40 @@ const balanceAction: Action = {
     ) => {
         try {
             const userMessage = message.content?.text || "";
-            const parsed = parseCommand(userMessage);
+            const parsed = await parseCommand(userMessage);
             
             // Get user's stored wallet address
             let walletAddress: string | null = null;
             
-            // Try to get wallet from stored state
+            // First try to get wallet from persistent storage
             try {
-                if ((runtime as any).userWallets && message.userId) {
-                    const userWallet = (runtime as any).userWallets[message.userId];
-                    if (userWallet?.address) {
-                        walletAddress = userWallet.address;
+                const storage = WalletStorage.getInstance();
+                const storedWallet = storage.getWallet(message.userId);
+                if (storedWallet?.address) {
+                    walletAddress = storedWallet.address;
+                    
+                    // Also update runtime storage for performance
+                    if (runtime && message.userId) {
+                        (runtime as any).userWallets = (runtime as any).userWallets || {};
+                        (runtime as any).userWallets[message.userId] = storedWallet;
                     }
                 }
             } catch (error) {
-                console.log('Could not retrieve stored wallet:', error);
+                console.log('Could not retrieve from persistent storage:', error);
+            }
+            
+            // If not found in persistent storage, check runtime storage
+            if (!walletAddress) {
+                try {
+                    if ((runtime as any).userWallets && message.userId) {
+                        const userWallet = (runtime as any).userWallets[message.userId];
+                        if (userWallet?.address) {
+                            walletAddress = userWallet.address;
+                        }
+                    }
+                } catch (error) {
+                    console.log('Could not retrieve from runtime storage:', error);
+                }
             }
             
             // Check if user provided a specific address in their message

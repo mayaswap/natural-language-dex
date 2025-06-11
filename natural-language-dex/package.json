@@ -22,6 +22,7 @@
   "description": "Natural Language DEX Interface powered by ElizaOS",
   "dependencies": {
     "@ai-sdk/openai": "^0.0.66",
+    "@anthropic-ai/sdk": "^0.53.0",
     "@elizaos/core": "^0.1.7-alpha.1",
     "@elizaos/plugin-bootstrap": "^0.1.7-alpha.1",
     "@elizaos/plugin-node": "^0.1.7-alpha.1",

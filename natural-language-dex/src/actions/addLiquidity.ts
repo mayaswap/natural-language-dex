@@ -25,7 +25,7 @@ const addLiquidityAction: Action = {
     ],
     validate: async (runtime: IAgentRuntime, message: Memory) => {
         const text = message.content.text;
-        const parsed = parseCommand(text);
+        const parsed = await parseCommand(text);
         
         return parsed.intent === 'addLiquidity' && parsed.confidence > 0.6;
     },
@@ -38,7 +38,7 @@ const addLiquidityAction: Action = {
         callback?: HandlerCallback
     ): Promise<boolean> => {
         const text = message.content.text;
-        const parsed = parseCommand(text);
+        const parsed = await parseCommand(text);
         
         if (!parsed.fromToken || !parsed.toToken) {
             if (callback) {

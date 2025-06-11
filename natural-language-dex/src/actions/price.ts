@@ -35,7 +35,7 @@ const priceAction: Action = {
     ],
     validate: async (runtime: IAgentRuntime, message: Memory) => {
         const text = message.content.text;
-        const parsed = parseCommand(text);
+        const parsed = await parseCommand(text);
         
         // Valid if it's a price command with sufficient confidence
         return parsed.intent === 'price' && parsed.confidence > 0.6;
@@ -49,7 +49,7 @@ const priceAction: Action = {
         callback?: HandlerCallback
     ): Promise<boolean> => {
         const text = message.content.text;
-        const parsed = parseCommand(text);
+        const parsed = await parseCommand(text);
         
         if (!parsed.fromToken) {
             if (callback) {

@@ -1,6 +1,10 @@
 import type { NaturalLanguageSwapParams } from '../types/index.js';
 import { POPULAR_TOKENS } from '../config/chains.js';
 
+// Simple cache to avoid multiple AI calls for the same input
+const parseCache = new Map<string, { result: ParsedCommand; timestamp: number }>();
+const CACHE_DURATION = 5000; // 5 seconds
+
 /**
  * Enhanced Natural Language Command Parser
  * Improved version with better pattern matching and contextual understanding
@@ -821,8 +825,56 @@ function parsePoolQuery(input: string): ParsedCommand {
 
 /**
  * Main enhanced parser function - now the default parseCommand
+ * Uses AI when available, falls back to regex parsing
+ * Implements caching to avoid multiple AI calls for the same input
  */
-export function parseCommand(input: string): ParsedCommand {
+export async function parseCommand(input: string): Promise<ParsedCommand> {
+  const cacheKey = input.trim().toLowerCase();
+  const now = Date.now();
+  
+  // Check cache first
+  const cached = parseCache.get(cacheKey);
+  if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+    return cached.result;
+  }
+  
+  let result: ParsedCommand;
+  
+  // Try AI parsing first if available
+  try {
+    const { parseWithAI } = await import('./ai-parser.js');
+    const aiResult = await parseWithAI(input);
+    
+    // If AI parsing was successful and confident, use it
+    if (aiResult.confidence > 0.7) {
+      result = aiResult;
+    } else {
+      result = parseWithRegex(input);
+    }
+  } catch (error) {
+    result = parseWithRegex(input);
+  }
+  
+  // Cache the result
+  parseCache.set(cacheKey, { result, timestamp: now });
+  
+  // Clean up old cache entries
+  if (parseCache.size > 100) {
+    const cutoff = now - CACHE_DURATION;
+    for (const [key, value] of parseCache.entries()) {
+      if (value.timestamp < cutoff) {
+        parseCache.delete(key);
+      }
+    }
+  }
+  
+  return result;
+}
+
+/**
+ * Regex-based parsing (fallback)
+ */
+function parseWithRegex(input: string): ParsedCommand {
   const normalized = input.toLowerCase().trim();
   
   // Detect intent with enhanced scoring
