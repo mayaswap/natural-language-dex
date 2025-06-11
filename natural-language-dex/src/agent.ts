@@ -3,6 +3,20 @@ import swapAction from "./actions/swap.js";
 import priceAction from "./actions/price.js";
 import walletAction from "./actions/wallet.js";
 import balanceAction from "./actions/balance.js";
+import addLiquidityAction from "./actions/addLiquidity.js";
+import queryPoolsAction from "./actions/queryPools.js";
+import removeLiquidityAction from "./actions/removeLiquidity.js";
+import portfolioAction from "./actions/portfolio.js";
+import gasPriceAction from "./actions/gasPrice.js";
+import transactionHistoryAction from "./actions/transactionHistory.js";
+import multiChainAction from "./actions/multiChain.js";
+import slippageManagementAction from "./actions/slippageManagement.js";
+import defiAnalyticsAction from "./actions/defiAnalytics.js";
+import tokenAllowanceAction from "./actions/tokenAllowance.js";
+import positionTrackingAction from "./actions/positionTracking.js";
+import advancedOrdersAction from "./actions/advancedOrders.js";
+import startMonitoringAction from "./actions/startMonitoring.js";
+import walletManagementAction from "./actions/walletManagement.js";
 import { WalletStorage } from "./utils/wallet-storage.js";
 import fs from "fs";
 import path from "path";
@@ -80,7 +94,105 @@ async function createAgent(): Promise<SimpleAgent> {
                      handler: async (message, callback) => {
                          await balanceAction.handler(sharedRuntime, message, undefined, {}, callback);
                      }
-                 }
+                 },
+                 {
+                     name: addLiquidityAction.name,
+                     validate: async (message) => await addLiquidityAction.validate(sharedRuntime, message),
+                     handler: async (message, callback) => {
+                         await addLiquidityAction.handler(sharedRuntime, message, undefined, {}, callback);
+                     }
+                 },
+                 {
+                     name: queryPoolsAction.name,
+                     validate: async (message) => await queryPoolsAction.validate(sharedRuntime, message),
+                     handler: async (message, callback) => {
+                         await queryPoolsAction.handler(sharedRuntime, message, undefined, {}, callback);
+                     }
+                 },
+                 {
+                     name: removeLiquidityAction.name,
+                     validate: async (message) => await removeLiquidityAction.validate(sharedRuntime, message),
+                     handler: async (message, callback) => {
+                         await removeLiquidityAction.handler(sharedRuntime, message, undefined, {}, callback);
+                     }
+                 },
+                 {
+                     name: portfolioAction.name,
+                     validate: async (message) => await portfolioAction.validate(sharedRuntime, message),
+                     handler: async (message, callback) => {
+                         await portfolioAction.handler(sharedRuntime, message, undefined, {}, callback);
+                     }
+                 },
+                 {
+                     name: gasPriceAction.name,
+                     validate: async (message) => await gasPriceAction.validate(sharedRuntime, message),
+                     handler: async (message, callback) => {
+                         await gasPriceAction.handler(sharedRuntime, message, undefined, {}, callback);
+                     }
+                 },
+                 {
+                     name: transactionHistoryAction.name,
+                     validate: async (message) => await transactionHistoryAction.validate(sharedRuntime, message),
+                     handler: async (message, callback) => {
+                         await transactionHistoryAction.handler(sharedRuntime, message, undefined, {}, callback);
+                     }
+                 },
+                 {
+                     name: multiChainAction.name,
+                     validate: async (message) => await multiChainAction.validate(sharedRuntime, message),
+                     handler: async (message, callback) => {
+                         await multiChainAction.handler(sharedRuntime, message, undefined, {}, callback);
+                     }
+                 },
+                                   {
+                      name: slippageManagementAction.name,
+                      validate: async (message) => await slippageManagementAction.validate(sharedRuntime, message),
+                      handler: async (message, callback) => {
+                          await slippageManagementAction.handler(sharedRuntime, message, undefined, {}, callback);
+                      }
+                  },
+                  {
+                                      name: defiAnalyticsAction.name,
+                validate: async (message) => await defiAnalyticsAction.validate(sharedRuntime, message),
+                handler: async (message, callback) => {
+                    await defiAnalyticsAction.handler(sharedRuntime, message, undefined, {}, callback);
+                }
+            },
+            {
+                name: tokenAllowanceAction.name,
+                validate: async (message) => await tokenAllowanceAction.validate(sharedRuntime, message),
+                handler: async (message, callback) => {
+                    await tokenAllowanceAction.handler(sharedRuntime, message, undefined, {}, callback);
+                }
+            },
+            {
+                name: positionTrackingAction.name,
+                validate: async (message) => await positionTrackingAction.validate(sharedRuntime, message),
+                handler: async (message, callback) => {
+                    await positionTrackingAction.handler(sharedRuntime, message, undefined, {}, callback);
+                }
+            },
+            {
+                name: advancedOrdersAction.name,
+                validate: async (message) => await advancedOrdersAction.validate(sharedRuntime, message),
+                handler: async (message, callback) => {
+                    await advancedOrdersAction.handler(sharedRuntime, message, undefined, {}, callback);
+                }
+            },
+            {
+                name: startMonitoringAction.name,
+                validate: async (message) => await startMonitoringAction.validate(sharedRuntime, message),
+                handler: async (message, callback) => {
+                    await startMonitoringAction.handler(sharedRuntime, message, undefined, {}, callback);
+                }
+            },
+            {
+                name: walletManagementAction.name,
+                validate: async (message) => await walletManagementAction.validate(sharedRuntime, message),
+                handler: async (message, callback) => {
+                    await walletManagementAction.handler(sharedRuntime, message, undefined, {}, callback);
+                }
+            }
              ],
              character: {
                  name: characterName
@@ -108,8 +220,10 @@ async function startInteractiveCLI(agent: SimpleAgent) {
     console.log("\n🚀 DEX Trading Agent Ready!");
     console.log("Try commands like:");
     console.log("  • Swap 100 USDC for WPLS");
-    console.log("  • What's the price of HEX?");
-    console.log("  • Trade 50 PLS for USDT");
+    console.log("  • Show market analytics");
+    console.log("  • What's the gas price?");
+    console.log("  • Switch to Base network");
+    console.log("  • Set slippage to 0.5%");
     console.log("  • Type 'exit' to quit\n");
 
     rl.prompt();
@@ -154,7 +268,7 @@ async function startInteractiveCLI(agent: SimpleAgent) {
             }
 
             if (!handled) {
-                console.log(`\n🤖 ${agent.character.name}: I can help you with token swaps and price checks. Try asking about swapping tokens or checking prices!`);
+                console.log(`\n🤖 ${agent.character.name}: I can help you with comprehensive DeFi operations including swaps, liquidity management, gas monitoring, multi-chain support, and trade settings. Try asking about any trading or DeFi operation!`);
             }
 
         } catch (error) {
